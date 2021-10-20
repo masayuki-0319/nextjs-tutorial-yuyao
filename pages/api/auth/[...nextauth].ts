@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import NextAuth from 'next-auth';
+import NextAuth, { Session, User } from 'next-auth';
 import Providers from 'next-auth/providers';
 import Adapters from 'next-auth/adapters';
 import { PrismaClient } from '@prisma/client';
@@ -17,6 +17,12 @@ const options = {
     }),
   ],
   adapter: Adapters.Prisma.Adapter({ prisma }),
+  callbacks: {
+    session: async (session: Session, user: User) => {
+      session.user.id = user.id;
+      return Promise.resolve(session);
+    },
+  },
 };
 
 const auth = (req: NextApiRequest, res: NextApiResponse) =>
